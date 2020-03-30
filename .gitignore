@@ -1,0 +1,7 @@
+ipch
+Debug
+x64
+Win32
+*.user
+*.sdf
+*.opensdf
