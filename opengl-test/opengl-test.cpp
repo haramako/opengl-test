@@ -18,6 +18,7 @@
 HINSTANCE hInst;								// current instance
 TCHAR szTitle[MAX_LOADSTRING];					// The title bar text
 TCHAR szWindowClass[MAX_LOADSTRING];			// the main window class name
+HWND hWindow;
 
 int readShaderSource(GLuint shaderObj, std::string fileName)
 {
@@ -172,6 +173,8 @@ int main_gl()
 	return 0;
 }
 
+void wgl_init();
+
 // Forward declarations of functions included in this code module:
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -183,7 +186,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPTSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-	return main_gl();
+	//return main_gl();
 
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -203,11 +206,22 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		return FALSE;
 	}
 
+	wgl_init();
+
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_OPENGLTEST));
+
+	GLint shader = makeShader("shader.vert", "shader.frag");
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
+		HDC hDC = GetDC(hWindow);
+
+		glUseProgram(shader);
+
+		draw();
+		SwapBuffers(hDC);
+
 		if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
 		{
 			TranslateMessage(&msg);
@@ -219,6 +233,51 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 }
 
 
+void wgl_init()
+{
+
+	PIXELFORMATDESCRIPTOR pformat = {
+		sizeof(PIXELFORMATDESCRIPTOR),
+		1,
+		0
+		| PFD_DRAW_TO_WINDOW
+		| PFD_SUPPORT_OPENGL
+		| PFD_DOUBLEBUFFER
+		,
+		PFD_TYPE_RGBA,
+		32,     // color
+		0, 0,   // R
+		0, 0,   // G
+		0, 0,   // B
+		0, 0,   // A
+		0, 0, 0, 0, 0,      // AC R G B A
+		24,     // depth
+		8,      // stencil
+		0,      // aux
+		0,      // layertype
+		0,  // reserved
+		0,  // layermask
+		0,  // visiblemask
+		0   // damagemask
+	};
+
+	HDC hDC = GetDC(hWindow);
+
+	int pfmt = ChoosePixelFormat(hDC, &pformat);
+	SetPixelFormat(hDC, pfmt, &pformat);
+
+	HGLRC hGLRC = wglCreateContext(hDC);
+	if (!wglMakeCurrent(hDC, hGLRC))
+	{
+		throw "error";
+	}
+
+	if (gl3wInit())
+	{
+		throw "error";
+	}
+
+}
 
 //
 //  FUNCTION: MyRegisterClass()
@@ -264,6 +323,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
       CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+
+   hWindow = hWnd;
 
    if (!hWnd)
    {
