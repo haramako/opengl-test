@@ -113,6 +113,12 @@ Vtx vtx_data[] = {
 	{ { 0, 0, 0 }, { 1, 0, 0 } },
 	{ { 0.5, 0.5, 0 }, { 0, 1, 0 } },
 	{ { 0.5, 0, 0 }, { 0, 0, 1 } },
+	{ { 0, 0.5, 0 }, { 0, 1, 1 } },
+};
+
+uint32_t idx_data[] = { 
+	0, 1, 2, 
+	0, 1, 3,
 };
 
 void draw()
@@ -140,8 +146,17 @@ void draw()
 		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * 4));
 	}
 
+	{
+		// index
+		GLuint buffer;
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(idx_data), idx_data, GL_STATIC_DRAW);
+	}
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	glDisableVertexAttribArray(0);
 
