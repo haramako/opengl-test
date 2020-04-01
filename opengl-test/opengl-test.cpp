@@ -104,30 +104,29 @@ void init()
 {
 }
 
-float pos_data[][3] = {
-	{ 0, 0, 0 },
-	{ 0.5, 0.5, 0 },
-	{ 0.5, 0, 0 },
+struct Vtx {
+	float pos[3];
+	float col[4];
 };
 
-float col_data[][3] = {
-	{ 1, 0, 0 },
-	{ 0.5, 0.5, 0 },
-	{ 0.5, 0, 0 },
+Vtx vtx_data[] = {
+	{ { 0, 0, 0 }, { 1, 0, 0 } },
+	{ { 0.5, 0.5, 0 }, { 0, 1, 0 } },
+	{ { 0.5, 0, 0 }, { 0, 0, 1 } },
 };
 
 void draw()
 {
 	// êFéwíË
-
+	int stride = sizeof(Vtx);
 	{
 		GLuint buffer;
 		glGenBuffers(1, &buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(pos_data), pos_data, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, 0);
 	}
 
 	{
@@ -135,10 +134,10 @@ void draw()
 		GLuint buffer;
 		glGenBuffers(1, &buffer);
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(col_data), col_data, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * 4));
 	}
 
 
