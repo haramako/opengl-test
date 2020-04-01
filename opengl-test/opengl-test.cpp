@@ -104,31 +104,43 @@ void init()
 {
 }
 
+float pos_data[][3] = {
+	{ 0, 0, 0 },
+	{ 0.5, 0.5, 0 },
+	{ 0.5, 0, 0 },
+};
+
+float col_data[][3] = {
+	{ 1, 0, 0 },
+	{ 0.5, 0.5, 0 },
+	{ 0.5, 0, 0 },
+};
+
 void draw()
 {
 	// êFéwíË
 
-	GLuint buffer;
-	glGenBuffers(1, &buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 3, NULL, GL_STATIC_DRAW);
+	{
+		GLuint buffer;
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(pos_data), pos_data, GL_STATIC_DRAW);
 
-	float *position = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-	position[0] = 0;
-	position[1] = 0.5;
-	position[2] = 0;
-	position[3] = 0.5;
-	position[4] = 0.5;
-	position[5] = 0;
-	position[6] = 0.5;
-	position[7] = 0;
-	position[8] = 0;
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	}
 
-	glUnmapBuffer(GL_ARRAY_BUFFER);
+	{
+		// color
+		GLuint buffer;
+		glGenBuffers(1, &buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(col_data), col_data, GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	}
+
 
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 
