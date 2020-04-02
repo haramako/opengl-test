@@ -121,6 +121,15 @@ uint32_t idx_data[] = {
 	0, 1, 3,
 };
 
+const GLfloat X = 0.1f;
+
+GLfloat mat[] = {
+	X, 0, 0, 0,
+	0, X, 0, 0,
+	0, 0, X, 0,
+	0, 0, 0, 1,
+};
+
 void draw()
 {
 	// êFéwíË
@@ -244,6 +253,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 		HDC hDC = GetDC(hWindow);
 
 		glUseProgram(shader);
+
+		GLint projection = glGetUniformLocation(shader, "projectionMatrix");
+		glUniformMatrix4fv(projection, 1, GL_FALSE, mat);
 
 		draw();
 		SwapBuffers(hDC);
