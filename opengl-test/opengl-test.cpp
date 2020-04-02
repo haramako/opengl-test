@@ -2,8 +2,8 @@
 //
 
 #include "stdafx.h"
+#include "stdint.h"
 #include <GL/gl3w.h>
-#include <GLFW/glfw3.h>
 
 #include "opengl-test.h"
 
@@ -64,6 +64,9 @@ GLint makeShader(std::string vertexFileName, std::string fragmentFileName)
 	glGetShaderiv(vertShaderObj, GL_COMPILE_STATUS, &compiled);
 	if (compiled == GL_FALSE)
 	{
+		char buf[1024];
+		GLint len;
+		glGetShaderInfoLog(vertShaderObj, sizeof(buf), &len, buf);
 		fprintf(stderr, "Compile error in vertex shader.\n");
 		return -1;
 	}
@@ -151,8 +154,8 @@ void draw()
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
 
-		glEnableVertexAttribArray(3);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * 4));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * 4));
 	}
 
 	{
@@ -172,42 +175,6 @@ void draw()
 	glFlush();
 }
 
-int main_gl()
-{
-	if (!glfwInit()) {
-		return -1;
-	}
-	GLFWwindow* window = glfwCreateWindow(640, 480, "test", NULL, NULL);
-
-	if (!window) {
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window); //Ç±ÇÃä÷êîÇÊÇËÇ‡å„Ç…
-	gl3wInit(); //é¿çsÇµÇ»Ç≠ÇƒÇÕÇ¢ÇØÇ»Ç¢
-	glfwSwapInterval(1);
-
-	init();
-
-	GLint shader = makeShader("shader.vert", "shader.frag");
-
-	while (!glfwWindowShouldClose(window)) {
-		glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUseProgram(shader);
-
-		draw();
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-
-	glfwTerminate();
-	return 0;
-}
-
 void wgl_init();
 
 // Forward declarations of functions included in this code module:
@@ -221,7 +188,6 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPTSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-	//return main_gl();
 
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -251,6 +217,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
 		HDC hDC = GetDC(hWindow);
+
+		glClearColor(0.8f, 0.8f, 0.8f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(shader);
 
